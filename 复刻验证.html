@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewThread Geek</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        body {
+            background-color: #fdf8f2;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .decor-img {
+            position: absolute;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+        .decor-img.zoom:hover {
+            transform: scale(1.1);
+        }
+        .section {
+            position: relative;
+            padding: 80px 0 100px;
+            margin: 40px 0;
+            width: 100%;
+            overflow: hidden;
+            scroll-margin-top:70px;
+        }
+        .home-section {
+            height: 100vh;
+            background-image: url("background_Homepage.png"); 
+            background-size: cover;
+            background-position: fixed;
+            position: relative ;
+            scroll-margin-top: 0;
+        }
+        .nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(255, 179, 32, 0.95);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 18px;
+            color: #fff;
+            z-index: 999;
+        }
+        .nav a{
+            position: relative;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px,18px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .nav a:hover {
+            background: #ff7f00;
+        } 
+        .intro-hover-img{
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: auto;
+            padding: 5px;
+            background: #fff;
+            border: 2px solid #ff7f00;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            transition: all 0.2s ease;
+        }
+        .nav a.intro-link .intro-hover-img {
+            display: block;
+        }
+        .home-logo {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 5;
+        }
+        .home-logo img {
+            width: 400px;
+            background: transparent;
+        }
+        .home-logo p {
+            color: #333;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        .intro-section {
+            background-color: #fdf8f2;
+        }
+        .intro-top-decor {
+            position:relative;
+            z-index:2;
+            max-width: 1000px;
+            width: 90%;
+            height: auto;
+            margin:0 auto 20px;
+            display: block;
+        }
+        .section-title {
+            font-size: 36px;
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+            display:block;
+            font-weight: 600;
+        }
+        .intro-cards {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+        }
+        .intro-card {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .intro-card.reverse {
+            flex-direction: row-reverse;
+        }
+        .intro-card img {
+            width: 220px;
+            flex-shrink: 0;
+        }
+        .intro-card h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .intro-card .quote {
+            font-size: 20px;
+            color: #0056b3;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        .intro-card p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+        }
+        .intro-decor1 {
+            top: 20%;
+            right: -50px;
+            width: 150px;
+            transform: rotate(15deg); 
+        }
+        .intro-decor2 {
+            bottom: 10%;
+            left: -60px;
+            width: 120px;
+            transform: rotate(-20deg); 
+        }
+        .about-section {
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 60px 20px;
+        }
+        .about-title {
+            font-size: 30px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        .about-cards {
+            display: flex;
+            justify-content: space-around;
+            gap: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        .about-card {
+            width: 280px;
+            background: #fff;
+            border: 2px solid #9c27b0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+        }
+        .about-card img {
+            width: 90px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        .about-card h3 {
+            font-size: 22px;
+            color: #9c27b0;
+            margin-bottom: 15px;
+        }
+        .about-card p {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #666;
+        }
+        .about-butterfly {
+            bottom: 20px;
+            right: 50px;
+            width: 100px;
+            transform: rotate(10deg); 
+        }
+        .contact-section {
+            background-color: #fff;
+            border: 2px solid #20c997;
+            border-radius: 8px;
+            padding: 60px 20px;
+        }
+        .contact-title {
+            font-size: 30px;
+            color: #20c997;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        .contact-content {
+            position: relative;
+            z-index: 2;
+        }
+        .contact-content ul {
+            margin-left: 30px;
+            font-size: 16px;
+            line-height: 2.2;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .contact-content .ps {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .contact-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .contact-btns button {
+            background: #20c997;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .contact-ladybug {
+            bottom: 30px;
+            left: 50px;
+            width: 50px;
+            transform: rotate(-5deg);
+        }
+        .contact-chameleon {
+            bottom: 20px;
+            right: 50px;
+            width: 150px;
+            transform: rotate(8deg); 
+        }
+        .contact-hearts {
+            top: 30px;
+            right: 80px;
+            width: 100px;
+            transform: rotate(12deg); 
+        }
+        .qa-section {
+            background-color: #91d5ff;
+            border-radius: 8px;
+            padding: 60px 20px;
+        }
+        .qa-title {
+            font-size: 30px;
+            color: #000;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        .qa-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            position: relative;
+            z-index: 2;
+        }
+        .qa-item {
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .qa-item .question {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .qa-item .answer {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+            display: none;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .qa-item:hover .answer {
+            display: block;
+        }
+        .qa-corner {
+            top: 0;
+            left: 0;
+            width: 80px;
+            transform: rotate(-10deg); 
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #FFB320;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+        }
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 12px 24px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            border-radius: 4px;
+            display: none;
+            z-index: 100;
+            font-size: 18px;
+            min-width:200px;
+            text-align:center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="section home-section" id="home">
+        <div class="nav">
+            <a href="#intro" class="nav-item intro-item">Introduction ▾
+                <img src="qrcode_1699620268564.jpg" alt="招新二维码" class="intro-hover-img">
+            </a>
+            <a href="#about">About US 👤</a>
+            <a href="#home" class="nav-item">NewThread 🏠</a>
+            <a href="#contact">Contact Us 📞</a>
+            <a href="#qa">Q&A 💬</a>
+        </div>
+        <div class="home-logo">
+            <img src="decoration_Geek.png" alt="GTGK徽标" class="zoom">
+        </div>
+    </div>
+    <div class="section intro-section" id="intro">
+         <img src="decoration_Transition.png" alt="Intro顶部装饰圈" class="intro-top-decor">
+        <img src="decoration_Transition.png" alt="装饰图1" class="decor-img intro-decor1 zoom">
+         <div class="container">
+            <h2 class="section-title">Introduction ▾</h2>
+            <div class="intro-cards">
+                <div class="intro-card">
+                    <img src="Geek_Programmer.png" alt="程序猿插画" class="zoom">
+                    <div>
+                        <h3>开发程序猿</h3>
+                        <p class="quote">"Stay Hungry, Stay Foolish"</p>
+                        <p>前端：前端开发是创建Web或app视觉界面呈现给用户的过程通过HTML，CSS及JavaScript以及衍生出来的各种技术、框架、解决方案，实现互联网产品的用户界面交互。
+                            <br>
+
+后端：通常也称服务器端开发。不对用户显示,负责处理前端的请求，进行逻辑处理和数据交互。 客户端: 移动应用开发是为了小型、无线计算设备编写软件的流程和程序的集合，例如智能手机或平板电脑。</p>
+                    </div>
+                </div>
+                <div class="intro-card reverse">
+                    <img src="Geek_PM.png" alt="产品经理插画" class="zoom">
+                    <div>
+                        <h3>产品经理</h3>
+                        <p class="quote">"好的软件的特征是，明明没用过，但总觉得用过似的"</p>
+                        <p>PM是针对某一项或某一类产品进行规划和管理的人员，需具备缜密的产品逻辑思维，研究用户心理，负责产品全生命周期。参与UI和交互设计，确定产品原型，让产品更具个性、操作更简洁。</p>
+                    </div>
+                </div>
+                <div class="intro-card">
+                    <img src="Geek_Game.png" alt="游戏开发插画" class="zoom">
+                    <div>
+                        <h3>游戏开发</h3>
+                        <p class="quote">"用代码构建虚拟世界，用创意传递快乐"</p>
+                        <p>游戏开发是融合编程、设计、美术、音效等多领域的工作，通过游戏引擎（如Unity、Unreal）结合编程语言，实现游戏的逻辑、玩法、画面呈现。涵盖前端交互、后端数据、特效设计等模块。</p>
+                    </div>
+                </div>
+                 <div class="intro-card reverse">
+                    <img src="Geek_security.png" alt="安全插画" class="zoom">
+                    <div>
+                        <h3>安全</h3>
+                        <p class="quote">"路漫漫其修远兮，非大毅力者不能"</p>
+                        <p>我们主要学习Web安全和二进制安全。在Web安全中我们将学习和实践Web漏洞挖掘技术，也将探索和讨论Web安全实践的方法。在二进制安全中我们专注于分析和防御与计算机程序、系统相关的威胁，同时实践漏洞分析和修补。耐心和钻研缺一不可。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section about-section" id="about">
+        <img src="decoration_Butterfly.png" alt="蝴蝶" class="decor-img about-butterfly zoom">
+        
+        <div class="container">
+            <h2 class="about-title">About US 👤</h2>
+            <div class="about-cards">
+                <div class="about-card">
+                    <img src="about_Speech.png" alt="Speech图标" class="zoom">
+                    <h3>Speech</h3>
+                    <p>每周举行技术例会，成员汇报学习内容、分享技术心得，促进彼此交流成长，同步项目进度，解决学习中遇到的问题，营造浓厚的技术探讨氛围。</p>
+                </div>
+                <div class="about-card">
+                    <img src="about_Diversity.png" alt="Diversity图标" class="zoom">
+                    <h3>Diversity</h3>
+                    <p>以多元化为特色，提供多方向发展选择，涵盖前后端开发、网络安全、人工智能、产品设计、游戏开发等领域，满足不同成员的兴趣和发展需求。</p>
+                </div>
+                <div class="about-card">
+                    <img src="about_Time.png" alt="30+H图标" class="zoom">
+                    <h3>30+ H</h3>
+                    <p>要求成员具备耐心和毅力，每周至少投入30小时在实验室学习实践，深耕技术领域，通过持续积累提升专业能力，夯实技术基础。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section contact-section" id="contact">
+        <img src="decoration_Ladybug.png" alt="瓢虫" class="decor-img contact-ladybug zoom">
+        <img src="decoration_Chameleon.png" alt="变色龙" class="decor-img contact-chameleon zoom">
+        <img src="decoration_Tree.png" alt="爱心" class="decor-img contact-hearts zoom">
+        
+        <div class="container">
+            <h2 class="contact-title">Contact Us 📞</h2>
+            <div class="contact-content">
+                <ul>
+                    <li>• 热爱计算机，具有geek精神，喜欢DIY，动手能力较强</li>
+                    <li>• 有编程/算法/硬件基础为佳（有作品可附上）</li>
+                    <li>• 有足够的空余时间，热爱思考，对事物有自己的见解</li>
+                </ul>
+                <div class="ps">
+                    ps: 非新思路统招，需通过发送邮件自我介绍，收到邮件回执后可进群；在读学生均可报名，邮件发送至newthread_geek@outlook.com（信中备注个人基本信息及意向方向，此招新活动为长期活动）
+                </div>
+                <div class="contact-btns">
+                    <button>QQ-Group 👥</button>
+                    <button id="copy-email">E-mail 📧</button>
+                    <button>Github 🐱</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section qa-section" id="qa">
+        <div class="container">
+            <h2 class="qa-title">More Questions 💬</h2>
+            <div class="qa-content">
+                <div class="qa-item">
+                    <div class="question">1. 什么是Geek(极客)? Geek精神又是什么?</div>
+                    <div class="answer">Geek（极客）是对计算机、技术领域有极致热爱且深入钻研的人群，不局限于技术，更强调对未知的探索欲；Geek精神核心是保持好奇心、勇于折腾、追求技术极致，乐于动手解决问题。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">2. 招新是安排在什么时间?</div>
+                    <div class="answer">招新为长期开展，无固定截止时间，只要符合招募要求，随时可通过邮件报名，报名后工作人员会在3个工作日内回复初审结果，通过后进入后续学习考核阶段。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">3. 我们有考核吗? 考核流程是怎样的呀?</div>
+                    <div class="answer">有考核，流程分四步：1. 邮件提交个人介绍及相关基础证明（可选）；2. 初审通过后进入1-2周新人学习期；3. 完成每周新人任务，提交学习成果；4. 参加针对性技术考核，通过即可正式加入。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">4. 考核是怎样的形式?</div>
+                    <div class="answer">采用“实操+面试”结合形式：实操根据意向方向布置小型落地项目（如前端做简单页面、后端写接口），考察动手能力；面试以技术沟通为主，了解学习思路、问题解决逻辑及对领域的认知。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">5.进入Geek组之后都有什么福利呢？</div>
+                    <div class="answer">一对一的新人指引，每一个成员都有会一个mentor, 带你初入门槛，与你一同成长，组内管理较宽松,在尊重其他人的前提下可以尽情发挥自己的个性。 打破平淡，与同样疯狂的人把疯狂的idea实现，磨砺耐性、培养思维、成就梦想。Lab设备/网络资源充足，闲暇之余也有组织活动。更有许多的故事等你来听~
+</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">6.进入团队会影响我的日常学习吗？</div>
+                    <div class="answer">你要知道大学是一个可以自由安排自己学习生活的地方。如果你想在上课之余充实自己、激励自己，最好的方法就是和比自己更优秀的人在一起。团队不缺优秀的 人，而我们也期待同样优秀的你，让我们一起前进！小组里也有不少保研, 考研的前辈们, 大部分都能找到一个平衡点, 而且团队的经历对你日后读研, 工作都大有裨益。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">7.老师以及学长学姐们的期望是什么?</div>
+                    <div class="answer">我们希望你有很强的自学能力，同时关注新事物、新技术，喜欢挑战，逻辑性强，善于和各种文化的人合作.“每个人都可以做自己想做的事情，每个人的方向不一样。 如果你想做产品或有不错的 idea，那么就可以找志同道合的人一起合作。”</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="back-to-top" id="back-top">↑</button>
+    <div class="toast" id="toast">邮箱已复制！</div>
+
+    <script>
+        const backTopBtn = document.getElementById('back-top');
+        window.onscroll = () => {
+            backTopBtn4. 考核.style.display = window.scrollY > 500 ? 'flex' : 'none';
+        };
+        backTopBtn.onclick = () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        const copyBtn = document.getElementById('copy-email');
+        const toast = document.getElementById('toast');
+        const targetEmail = 'newthread_geek@outlook.com';
+        copyBtn.onclick = async () => {
+            try {
+                await navigator.clipboard.writeText(targetEmail);
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 2000);
+            } catch (err) {
+               const textarea = document.createElement('textarea');
+               textarea.value = targetEmail;
+               textArea.style.position = 'fixed';  
+               textArea.style.top = '-9999px';
+               textArea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 2000);
+
+            }
+        };
+        document.querySelectorAll('.nav a:not([href*="newthread_geek@outlook.com"])').forEach(link => {
+            link.addEventListener('click',function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ 
+                        behavior: 'smooth',block:'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
